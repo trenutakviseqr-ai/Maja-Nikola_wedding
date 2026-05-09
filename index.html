@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maja & Nikola 💍</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+
+/* GENERAL */
+body{
+margin:0;
+font-family:'Cormorant Garamond', serif;
+background:linear-gradient(#f4f6f8,#e9eef3);
+color:#2f4a73;
+overflow-x:hidden;
+}
+
+/* FLOWERS */
+body::before,
+body::after{
+content:"";
+position:fixed;
+width:300px;
+height:300px;
+background-size:contain;
+background-repeat:no-repeat;
+z-index:0;
+pointer-events:none;
+opacity:0.8;
+}
+body::before{
+top:0;
+left:0;
+background-image:url("flowers-top.png");
+}
+body::after{
+bottom:0;
+right:0;
+background-image:url("flowers-bottom.png");
+}
+
+/* FRAME */
+.frame{
+position:fixed;
+top:20px;
+left:20px;
+right:20px;
+bottom:20px;
+border:1px solid #d9e1ea;
+z-index:1;
+pointer-events:none;
+}
+
+/* LOGIN */
+#login{
+position:fixed;
+width:100%;
+height:100%;
+background:
+linear-gradient(rgba(47,74,115,0.6), rgba(47,74,115,0.6)),
+url("hero.jpg") center/cover no-repeat;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+animation:fadeIn 1s ease;
+}
+
+.login-box{
+background:rgba(255,255,255,0.15);
+border:1px solid rgba(255,255,255,0.3);
+padding:40px;
+border-radius:20px;
+text-align:center;
+color:white;
+backdrop-filter: blur(12px);
+max-width:350px;
+animation:slideUp 1.2s ease;
+}
+
+.login-box h1{
+font-family:'Great Vibes', cursive;
+font-size:42px;
+}
+
+.login-text{
+font-size:15px;
+margin:20px 0;
+}
+
+/* INPUT */
+input{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #d9e1ea;
+margin:10px 0;
+font-family:'Cormorant Garamond', serif;
+}
+
+/* BUTTON */
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:30px;
+background:linear-gradient(45deg,#2f4a73,#4f6b94);
+color:white;
+cursor:pointer;
+transition:0.3s;
+letter-spacing:1px;
+}
+button:hover{
+transform:scale(1.05);
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* HERO */
+.hero{
+height:75vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+position:relative;
+z-index:2;
+
+background:
+linear-gradient(rgba(255,255,255,0.75), rgba(255,255,255,0.75)),
+url("hero1.jpg") center/cover no-repeat;
+
+animation:fadeIn 1.5s ease;
+}
+
+.hero h1{
+font-family:'Great Vibes', cursive;
+font-size:72px;
+margin-bottom:10px;
+animation:slideUp 1.5s ease;
+}
+
+.hero p{
+font-size:18px;
+letter-spacing:2px;
+color:#4f6b94;
+background:rgba(255,255,255,0.6);
+padding:6px 14px;
+border-radius:20px;
+animation:fadeIn 2s ease;
+}
+
+.hero::after{
+content:"";
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+height:120px;
+background:linear-gradient(to bottom, transparent, #f4f6f8);
+}
+
+/* TEXT */
+.intro{
+max-width:700px;
+margin:auto;
+text-align:center;
+padding:20px;
+position:relative;
+z-index:2;
+animation:fadeIn 1.8s ease;
+}
+
+.intro h2{
+font-size:32px;
+}
+
+/* GALLERY */
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:15px;
+padding:20px;
+position:relative;
+z-index:2;
+}
+
+.gallery img{
+width:100%;
+height:220px;
+object-fit:cover;
+border-radius:14px;
+border:2px solid #d9e1ea;
+cursor:pointer;
+transition:0.4s;
+opacity:0;
+transform:translateY(20px);
+animation:fadeUp 0.8s forwards;
+}
+
+.gallery img:hover{
+transform:scale(1.05);
+}
+
+/* LIGHTBOX */
+#lightbox{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(15,20,30,0.95);
+backdrop-filter:blur(8px);
+justify-content:center;
+align-items:center;
+z-index:9999;
+animation:fadeIn 0.4s ease;
+}
+
+#lightbox img{
+max-width:92%;
+max-height:88%;
+border-radius:18px;
+box-shadow:0 20px 50px rgba(0,0,0,0.4);
+animation:zoomIn 0.4s ease;
+}
+
+/* ARROWS */
+.arrow{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+font-size:55px;
+color:white;
+cursor:pointer;
+padding:12px;
+transition:0.3s;
+user-select:none;
+opacity:0.8;
+}
+
+.arrow:hover{
+opacity:1;
+transform:translateY(-50%) scale(1.1);
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn{
+from{opacity:0;}
+to{opacity:1;}
+}
+
+@keyframes slideUp{
+from{transform:translateY(40px); opacity:0;}
+to{transform:translateY(0); opacity:1;}
+}
+
+@keyframes fadeUp{
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+@keyframes zoomIn{
+from{
+opacity:0;
+transform:scale(0.9);
+}
+to{
+opacity:1;
+transform:scale(1);
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="frame"></div>
+
+<!-- LOGIN -->
+<div id="login">
+<div class="login-box">
+<h1>Maja & Nikola 💍</h1>
+<div class="login-text">
+<strong>13. lipanj 2026</strong><br><br>
+Dobrodošli na naš poseban dan 💙 Hvala vam što ste dio trenutka koji ćemo pamtiti cijeli život.
+</div>
+<button onclick="enter()" class="enter-btn">Uđi ✨</button>
+</div>
+</div>
+
+<div class="hero">
+<h1>Maja & Nikola</h1>
+<p>13. lipanj 2026 💙</p>
+</div>
+<div class="intro">
+  <h2>Podijelite uspomene 💙</h2>
+  <p>
+    Hvala što ste dio našeg najljepšeg dana.💍<br><br>
+    Dragi naši gosti, od srca vam hvala što ste danas dio našeg vjenčanja.
+    Vaša prisutnost, osmijesi i ljubav učinili su ovaj dan još posebnijim.
+  </p>
+</div>
+
+<div class="intro">
+<button onclick="upload()">📸 Dodaj slike (max10)</button>
+<button onclick="downloadAll()">📦 Preuzmi sve</button>
+</div>
+
+<input type="file" id="file" multiple hidden>
+
+<div class="gallery" id="gallery"></div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+<span class="arrow" style="left:20px;" onclick="event.stopPropagation(); prev()">❮</span>
+<img id="lightbox-img">
+<span class="arrow" style="right:20px;" onclick="event.stopPropagation(); next()">❯</span>
+</div>
+
+<script>
+
+const client = window.supabase.createClient(
+"https://pfjqfnqpqljlsytjnsrw.supabase.co",
+"sb_publishable_sDCNISDGhcLJPBamCpJ5BA_fkpcVRtZ"
+);
+
+let images = [];
+let current = 0;
+
+function enter(){
+document.getElementById("login").style.opacity = "0";
+
+setTimeout(()=>{
+document.getElementById("login").style.display="none";
+loadGallery();
+},500);
+}
+
+/* UPLOAD */
+function upload(){
+document.getElementById("file").click();
+}
+
+document.getElementById("file").addEventListener("change", async (e)=>{
+let files = Array.from(e.target.files).slice(0,10);
+for(let file of files){
+let filename = Date.now()+"_"+file.name;
+await client.storage.from("MajaZalac").upload(filename, file);
+}
+loadGallery();
+});
+
+/* LOAD GALLERY */
+async function loadGallery(){
+const { data } = await client.storage.from("MajaZalac").list("", {limit:10000});
+const gallery = document.getElementById("gallery");
+gallery.innerHTML = "";
+images = [];
+
+data.forEach((file, index) => {
+const { data:urlData } = client.storage.from("MajaZalac").getPublicUrl(file.name);
+const url = urlData.publicUrl;
+
+images.push(url);
+
+const img = document.createElement("img");
+img.src = url;
+img.style.animationDelay = (index * 0.1) + "s";
+
+img.onclick = () => {
+current = index;
+openLightbox();
+};
+
+gallery.appendChild(img);
+});
+}
+
+/* LIGHTBOX */
+function openLightbox(){
+const lb = document.getElementById("lightbox");
+lb.style.display = "flex";
+lb.style.animation = "fadeIn 0.4s ease";
+showImage();
+}
+
+function showImage(){
+document.getElementById("lightbox-img").src = images[current];
+}
+
+function next(){
+current = (current + 1) % images.length;
+showImage();
+}
+
+function prev(){
+current = (current - 1 + images.length) % images.length;
+showImage();
+}
+
+document.getElementById("lightbox").addEventListener("click",(e)=>{
+if(e.target.id === "lightbox"){
+document.getElementById("lightbox").style.display="none";
+}
+});
+document.addEventListener("keydown",(e)=>{
+
+if(document.getElementById("lightbox").style.display === "flex"){
+
+if(e.key === "ArrowRight"){
+next();
+}
+
+if(e.key === "ArrowLeft"){
+prev();
+}
+
+if(e.key === "Escape"){
+document.getElementById("lightbox").style.display = "none";
+}
+
+}
+
+});
+
+/* DOWNLOAD */
+async function downloadAll(){
+const zip = new JSZip();
+for(let i=0;i<images.length;i++){
+const res = await fetch(images[i]);
+const blob = await res.blob();
+zip.file("slika_"+(i+1)+".jpg", blob);
+}
+const content = await zip.generateAsync({type:"blob"});
+const a = document.createElement("a");
+a.href = URL.createObjectURL(content);
+a.download = "svadba_slike.zip";
+a.click();
+}
+
+</script>
+
+</body>
+</html>
