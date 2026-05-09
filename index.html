@@ -18,6 +18,7 @@ font-family:'Cormorant Garamond', serif;
 background:linear-gradient(#f4f6f8,#e9eef3);
 color:#2f4a73;
 overflow-x:hidden;
+overflow-y:hidden;
 }
 
 /* FLOWERS */
@@ -118,6 +119,11 @@ letter-spacing:1px;
 button:hover{
 transform:scale(1.05);
 box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+button:disabled{
+opacity:0.7;
+cursor:not-allowed;
+transform:none;
 }
 
 /* HERO */
@@ -311,11 +317,13 @@ Dobrodošli na naš poseban dan 💙 Hvala vam što ste dio trenutka koji ćemo 
 </div>
 
 <div class="intro">
-<button onclick="upload()">📸 Dodaj slike (max10)</button>
+<button onclick="upload()" class="upload-btn">
+📸 Dodaj slike (max10)
+</button>
 <button onclick="downloadAll()">📦 Preuzmi sve</button>
 </div>
 
-<input type="file" id="file" multiple hidden>
+<input type="file" id="file" multiple accept="image/*" hidden>
 
 <div class="gallery" id="gallery"></div>
 
@@ -341,6 +349,7 @@ document.getElementById("login").style.opacity = "0";
 
 setTimeout(()=>{
 document.getElementById("login").style.display="none";
+document.body.style.overflowY = "auto";
 loadGallery();
 },500);
 }
@@ -351,12 +360,35 @@ document.getElementById("file").click();
 }
 
 document.getElementById("file").addEventListener("change", async (e)=>{
-let files = Array.from(e.target.files).slice(0,10);
-for(let file of files){
-let filename = Date.now()+"_"+file.name;
-await client.storage.from("MajaZalac").upload(filename, file);
+
+const uploadBtn = document.querySelector(".upload-btn");
+
+uploadBtn.innerText = "Uploading... ⏳";
+uploadBtn.disabled = true;
+
+const selectedFiles = Array.from(e.target.files);
+
+if(selectedFiles.length > 10){
+alert("Možete uploadati maksimalno 10 slika odjednom 📸");
 }
-loadGallery();
+
+const files = selectedFiles.slice(0,10);
+
+for(let file of files){
+
+let filename = Date.now()+"_"+file.name;
+
+await client.storage
+.from("MajaZalac")
+.upload(filename, file);
+
+}
+
+await loadGallery();
+
+uploadBtn.innerText = "📸 Dodaj slike (max10)";
+uploadBtn.disabled = false;
+
 });
 
 /* LOAD GALLERY */
@@ -366,7 +398,9 @@ const gallery = document.getElementById("gallery");
 gallery.innerHTML = "";
 images = [];
 
-data.forEach((file, index) => {
+data
+.sort((a,b)=> b.name.localeCompare(a.name))
+.forEach((file, index) => {
 const { data:urlData } = client.storage.from("MajaZalac").getPublicUrl(file.name);
 const url = urlData.publicUrl;
 
