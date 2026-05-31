@@ -378,10 +378,17 @@ for(let file of files){
 
 let filename = Date.now()+"_"+file.name;
 
-await client.storage
+const { data, error } = await client.storage
 .from("MajaZalac")
 .upload(filename, file);
 
+console.log("UPLOAD DATA:", data);
+console.log("UPLOAD ERROR:", error);
+
+if(error){
+alert(error.message);
+console.error(error);
+}
 }
 
 await loadGallery();
